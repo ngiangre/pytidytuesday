@@ -1,12 +1,12 @@
 from plotnine import *
-import functions as f
+import utils
 
 repo = "rfordatascience/tidytuesday/contents/data/2025/2025-04-22/"
-files = f.list_github_repo_files(repo)
+files = utils.list_github_repo_files(repo)
 
 file_urls = ['https://raw.githubusercontent.com/' + repo.replace('contents/', 'main/') + f for f in files if f.endswith('.csv')]
 
-conn = f.inject_files_into_duckdb(file_urls)  
+conn = utils.inject_files_into_duckdb(file_urls)  
 
 # Execute query to get fatalities data by quarter AND year with statistics for confidence intervals
 query = """
@@ -43,7 +43,7 @@ plot = (
     )
 )
 plot.save(
-  filename = "results/fatalities_time_series.pdf", 
+  filename = "results/fatal-car-crashes_fatalities_time_series.pdf", 
   width = 12,
   height = 6,
   dpi = 300,
