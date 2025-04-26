@@ -1,6 +1,5 @@
 import requests
 import duckdb
-import requests
 
 def list_github_repo_files(repo: str) -> list:
   if not isinstance(repo, str):

@@ -1,3 +1,11 @@
+---
+title: "Fatal Car Crashes"
+format: html
+editor: visual
+jupyter: python3
+---
+
+```{python}
 from plotnine import *
 import utils
 
@@ -7,7 +15,9 @@ files = utils.list_github_repo_files(repo)
 file_urls = ['https://raw.githubusercontent.com/' + repo.replace('contents/', 'main/') + f for f in files if f.endswith('.csv')]
 
 conn = utils.inject_files_into_duckdb(file_urls)  
+```
 
+```{python}
 # Execute query to get fatalities data by quarter AND year with statistics for confidence intervals
 query = """
     SELECT
@@ -24,6 +34,9 @@ query = """
 
 quarterly_df = conn.execute(query).fetchdf()
 
+```
+
+```{python}
 plot = (
     ggplot(quarterly_df, aes(x='year', y='avg_fatalities',group=1)) +
     geom_errorbar(aes(ymin='ci_lower', ymax='ci_upper'), width=0.2, alpha=0.7) +
@@ -42,13 +55,21 @@ plot = (
         axis_text_x=element_text(angle=45,vjust=1,hjust=1)
     )
 )
+
+plot
+```
+
+```{python}
 plot.save(
-  filename = "results/fatal-car-crashes_fatalities_time_series.pdf", 
+  filename = "fatal-car-crashes_fatalities_time_series.pdf", 
   width = 12,
   height = 6,
   dpi = 300,
   verbose = False
 )
+```
 
+```{python}
 # Close connection
 conn.close()
+```
