@@ -1,9 +1,18 @@
 ---
 title: "Fatal Car Crashes"
-format: html
+format: 
+  html:
+    toc: true
+    code-fold: show
 editor: visual
 jupyter: python3
 ---
+
+# Overview
+
+![](images/clipboard-2745235717.png)
+
+# Data
 
 ```{python}
 from plotnine import *
@@ -36,6 +45,8 @@ quarterly_df = conn.execute(query).fetchdf()
 
 ```
 
+# Plot
+
 ```{python}
 plot = (
     ggplot(quarterly_df, aes(x='year', y='avg_fatalities',group=1)) +
@@ -58,6 +69,8 @@ plot = (
 
 plot
 ```
+
+# Output
 
 ```{python}
 plot.save(

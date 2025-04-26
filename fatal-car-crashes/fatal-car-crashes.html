@@ -71,10 +71,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
+  <li><a href="#plot" id="toc-plot" class="nav-link" data-scroll-target="#plot">Plot</a></li>
+  <li><a href="#output" id="toc-output" class="nav-link" data-scroll-target="#output">Output</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -96,7 +107,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div id="fdd5d667" class="cell" data-execution_count="1">
+<section id="overview" class="level1">
+<h1>Overview</h1>
+<p><img src="images/clipboard-2745235717.png" class="img-fluid"></p>
+</section>
+<section id="data" class="level1">
+<h1>Data</h1>
+<div id="b2464693" class="cell" data-execution_count="1">
+<details open="" class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> utils</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -106,13 +125,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>file_urls <span class="op">=</span> [<span class="st">'https://raw.githubusercontent.com/'</span> <span class="op">+</span> repo.replace(<span class="st">'contents/'</span>, <span class="st">'main/'</span>) <span class="op">+</span> f <span class="cf">for</span> f <span class="kw">in</span> files <span class="cf">if</span> f.endswith(<span class="st">'.csv'</span>)]</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>conn <span class="op">=</span> utils.inject_files_into_duckdb(file_urls)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-22/daily_accidents.csv into table 'daily_accidents'
 Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-22/daily_accidents_420.csv into table 'daily_accidents_420'
 Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-22/daily_accidents_420_time.csv into table 'daily_accidents_420_time'</code></pre>
 </div>
 </div>
-<div id="c5518fce" class="cell" data-execution_count="2">
+<div id="ec5122b3" class="cell" data-execution_count="2">
+<details open="" class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute query to get fatalities data by quarter AND year with statistics for confidence intervals</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>query <span class="op">=</span> <span class="st">"""</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="st">    SELECT</span></span>
@@ -128,8 +150,14 @@ Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="st">"""</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>quarterly_df <span class="op">=</span> conn.execute(query).fetchdf()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-<div id="28d3ca34" class="cell" data-execution_count="3">
+</section>
+<section id="plot" class="level1">
+<h1>Plot</h1>
+<div id="45a70c69" class="cell" data-execution_count="3">
+<details open="" class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plot <span class="op">=</span> (</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    ggplot(quarterly_df, aes(x<span class="op">=</span><span class="st">'year'</span>, y<span class="op">=</span><span class="st">'avg_fatalities'</span>,group<span class="op">=</span><span class="dv">1</span>)) <span class="op">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    geom_errorbar(aes(ymin<span class="op">=</span><span class="st">'ci_lower'</span>, ymax<span class="op">=</span><span class="st">'ci_upper'</span>), width<span class="op">=</span><span class="fl">0.2</span>, alpha<span class="op">=</span><span class="fl">0.7</span>) <span class="op">+</span></span>
@@ -150,6 +178,7 @@ Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2
 <span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -158,7 +187,12 @@ Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2
 </div>
 </div>
 </div>
-<div id="5d41ff1c" class="cell" data-execution_count="4">
+</section>
+<section id="output" class="level1">
+<h1>Output</h1>
+<div id="42186391" class="cell" data-execution_count="4">
+<details open="" class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plot.save(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  filename <span class="op">=</span> <span class="st">"fatal-car-crashes_fatalities_time_series.pdf"</span>, </span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  width <span class="op">=</span> <span class="dv">12</span>,</span>
@@ -166,11 +200,16 @@ Loaded https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  dpi <span class="op">=</span> <span class="dv">300</span>,</span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  verbose <span class="op">=</span> <span class="va">False</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-<div id="21596a20" class="cell" data-execution_count="5">
+<div id="289685a8" class="cell" data-execution_count="5">
+<details open="" class="code-fold">
+<summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Close connection</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>conn.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
+</section>
 
 </main>
 <!-- /main column -->
