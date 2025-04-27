@@ -14,9 +14,12 @@ jupyter: python3
 
 # Data
 
+## Database
+
 ```{python}
 from plotnine import *
 import utils
+import pandas as pd
 
 repo = "rfordatascience/tidytuesday/contents/data/2025/2025-04-22/"
 files = utils.list_github_repo_files(repo)
@@ -25,6 +28,18 @@ file_urls = ['https://raw.githubusercontent.com/' + repo.replace('contents/', 'm
 
 conn = utils.inject_files_into_duckdb(file_urls)  
 ```
+
+## Full Data
+
+```{python}
+full_data = (
+  conn.
+  execute("SELECT * from daily_accidents_420_time").
+  fetchdf()
+)
+```
+
+## Annual Data
 
 ```{python}
 # Execute query to get fatalities data by quarter AND year with statistics for confidence intervals
@@ -41,15 +56,51 @@ query = """
     ORDER BY year
 """
 
-quarterly_df = conn.execute(query).fetchdf()
+annual_df = conn.execute(query).fetchdf()
 
 ```
 
 # Plot
 
+## Fatality Distribution Over Time
+
+```{python}
+# Assuming full_data is your dataframe
+# Convert the 'date' column to datetime if it isn't already
+full_data['date'] = pd.to_datetime(full_data['date'])
+
+# Extract year from the 'date' column
+full_data['year'] = full_data['date'].dt.year
+
+# Create the ridgeline plot using plotnine
+plot = (ggplot(full_data, aes(x='factor(year)', y='fatalities_count'))
+        + geom_boxplot(alpha=0.7)
+        + theme(axis_text_x=element_text(rotation=45, hjust=1), 
+                axis_title=element_text(size=12),
+                strip_text=element_text(size=12))
+        + labs(title="Distribution of Fatalities by Year", 
+               x="", 
+               y="Number of Fatalities")
+        )
+               
+plot
+```
+
+```{python}
+plot.save(
+  filename = "fatal-car-crashes_nfatalities_by_year.pdf", 
+  width = 12,
+  height = 6,
+  dpi = 300,
+  verbose = False
+)
+```
+
+## Annual Fatality Distribution
+
 ```{python}
 plot = (
-    ggplot(quarterly_df, aes(x='year', y='avg_fatalities',group=1)) +
+    ggplot(annual_df, aes(x='year', y='avg_fatalities',group=1)) +
     geom_errorbar(aes(ymin='ci_lower', ymax='ci_upper'), width=0.2, alpha=0.7) +
     geom_line(size=1) +
     geom_point(size=3) +
@@ -69,8 +120,6 @@ plot = (
 
 plot
 ```
-
-# Output
 
 ```{python}
 plot.save(
